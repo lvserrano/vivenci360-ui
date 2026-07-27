@@ -1,0 +1,51 @@
+@keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalCardIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+
+.overlay {
+  position: fixed; inset: 0; z-index: 60; padding: 1rem;
+  background: var(--overlay); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  animation: modalFadeIn 160ms ease;
+}
+.modal {
+  width: 100%; max-width: 440px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal); overflow: hidden;
+  display: flex; flex-direction: column;
+  max-height: calc(100dvh - 2rem);
+  animation: modalCardIn 180ms cubic-bezier(.4,0,.2,1);
+}
+.head { display: flex; align-items: center; gap: .8rem; padding: 1.15rem 1.3rem; border-bottom: 1px solid var(--border); flex: none; }
+.ico { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; flex: none; }
+.icoBrand { background: var(--accent-pale); color: var(--accent); }
+.icoDanger { background: var(--err-bg); color: var(--err); }
+.titulo { font-size: 1.02rem; font-weight: 700; color: var(--text); }
+.x { margin-left: auto; background: transparent; border: none; cursor: pointer; color: var(--text-subtle); padding: 4px; border-radius: 7px; transition: background var(--transition), color var(--transition); }
+.x:hover { background: var(--accent-pale); color: var(--text); }
+.body { padding: 1.2rem 1.3rem; font-size: .9rem; line-height: 1.55; color: var(--text); display: grid; gap: .5rem; overflow-y: auto; min-height: 0; }
+.foot { display: flex; justify-content: flex-end; gap: .6rem; padding: 1rem 1.3rem; border-top: 1px solid var(--border); background: var(--bg); flex: none; }
+
+.campoLabel { font-size: .78rem; font-weight: 600; color: var(--text-muted); }
+/* Mensagem do ConfirmModal: um parágrafo que flui (o .body é grid e quebraria por trecho). */
+.mensagem { margin: 0; }
+.campo {
+  border: 1px solid var(--border); border-radius: var(--radius-md); padding: .6rem .7rem;
+  background: var(--bg); color: var(--text); font: inherit; width: 100%; resize: vertical;
+}
+.campo:focus { outline: 2px solid var(--accent-border); outline-offset: 0; border-color: var(--accent); }
+
+/* Botões (padrão /estilo) */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  font: inherit; font-size: .88rem; font-weight: 600; line-height: 1;
+  padding: .6rem 1.05rem; border-radius: var(--radius-md); border: 1px solid transparent; cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition), transform var(--transition), color var(--transition);
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.btnPrimary { background: var(--accent-grad); color: var(--on-accent); box-shadow: var(--shadow-glow); }
+.btnPrimary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-accent-lg); }
+.btnDanger { background: var(--err); color: var(--on-accent); }
+.btnDanger:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.btnGhost { background: transparent; color: var(--text-muted); border-color: var(--border); }
+.btnGhost:hover:not(:disabled) { background: var(--accent-pale); color: var(--accent); }

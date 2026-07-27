@@ -119,3 +119,38 @@ fixa `--shadow-accent` (bloco `invariante` de `tokens.json`) — não confundir
 com `--shadow-glow`, que varia por tema e serve a outro propósito. A fonte do
 `dp-input` é `inherit` (o primitivo não fixa família de fonte; os apps
 hospedeiros já usam Inter no `body`).
+
+## Modal
+
+`import { Modal, BotaoModal, PromptModal, ConfirmModal } from "@vivenci360/ui";`
+
+Quatro exports, não um componente só. Substitui overlay nativo — base é a
+implementação que já existia no `ingenix-marketing` (ver ADR 0003, seção
+Modal, e a emenda de 2026-07-27 com as cinco correções do passo 23).
+
+```tsx
+<Modal titulo="Excluir item" icone={<Trash2 size={16} />} tone="danger" onClose={fechar}>
+  conteúdo…
+</Modal>
+
+<ConfirmModal titulo="Excluir setor" mensagem="Esta ação não pode ser desfeita." onConfirm={excluir} onClose={fechar} />
+<PromptModal titulo="Renomear" label="Novo nome" onConfirm={renomear} onClose={fechar} />
+<BotaoModal variante="danger" onClick={excluir}>Excluir</BotaoModal>
+```
+
+Assinatura: `Modal({ titulo, icone?, tone?, onClose, children, footer? })`.
+Sem `largura` (só existe uma largura, 440px — nenhum dos 18 call sites pedia
+outra) e sem `scrollável?` (o corpo rolável com cabeçalho/rodapé fixos é
+comportamento padrão, sempre ligado — não é opcional porque uma opção
+desligada por engano reintroduz o modal que estoura a viewport).
+
+**Não fecha ao clicar no fundo — só por `Esc` e pelo `×`.** Decisão
+deliberada, não herança acidental: pelo menos quatro modais da plataforma têm
+campo de senha (exclusão, remoção de item, deploy, super-admin) e outros têm
+formulário preenchido à mão; um clique errado no overlay descartaria o que
+foi digitado, sem confirmação. Ver ADR 0003, emenda do passo 23, item 3.
+
+**Estilo:** `Modal.module.css`, autossuficiente — os `@keyframes` de entrada
+(`modalFadeIn`, `modalCardIn`) vivem dentro do módulo, não em `globals.css` de
+app nenhum. Cores via tokens do bloco `invariante` (`--overlay`,
+`--shadow-modal`, `--shadow-accent-lg`, `--on-accent`). Largura fixa em 440px.

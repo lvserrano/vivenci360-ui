@@ -6,3 +6,5 @@ export { temaInicial, salvarTema, aplicarTema, THEME_KEY } from "./tema";
 export type { Tema } from "./tema";
 
 export { default as DatePicker } from "./DatePicker";
+
+export { Modal, BotaoModal, PromptModal, ConfirmModal } from "./Modal";
