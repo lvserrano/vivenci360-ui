@@ -1,0 +1,9 @@
+{
+  "name": "@vivenci360/ui-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Design system compartilhado do Vivenci360 (packages/tokens, depois packages/ui e packages/contracts). Consumido via git submodule, não via npm registry — ver PLANO-ARQUITETURA.md, Seção 3.3.",
+  "scripts": {
+    "build": "node tokens/build.mjs"
+  }
+}
