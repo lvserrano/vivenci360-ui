@@ -16,6 +16,7 @@ export const tokensInvariantes = {
   "preview-dark-panel": "#141B2D",
   "preview-dark-panel-border": "#26324B",
   "on-accent": "#FFFFFF",
+  "shadow-accent": "0 6px 18px rgba(99,102,241,.35)",
 } as const;
 
 export const tokensClaro = {

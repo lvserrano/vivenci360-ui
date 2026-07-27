@@ -91,3 +91,31 @@ e não são renomeáveis.
 cores fixas do preview de `variant="cards"` (que não reagem a `data-theme`,
 porque mostram os dois temas ao mesmo tempo) vêm do bloco `invariante` de
 `tokens.json` (`--preview-light-*`, `--preview-dark-*`, `--on-accent`).
+
+## DatePicker
+
+`import { DatePicker } from "@vivenci360/ui";`
+
+Calendário próprio (substitui `<input type="date">` nativo, que não pode ser
+estilizado). Valor sempre ISO `"YYYY-MM-DD"`.
+
+```tsx
+<DatePicker value={data} onChange={setData} placeholder="dd/mm/aaaa" />
+```
+
+Assinatura: `{ value, onChange, placeholder? }` — sem `className`, sem props
+extras. Nenhum call site (20, nos dois apps) precisa de mais que isso.
+
+O popup abre num portal (`position: fixed`, escapa de containers com
+`overflow: hidden`) e faz **clamp vertical automático**: abre para baixo por
+padrão e, se não couber até o fim da janela, abre para cima. Isso é
+comportamento padrão do componente, não uma prop — quem precisar de "sempre
+abre pra baixo" está pedindo de volta o bug que a versão antiga do
+`promo-robot-web` tinha (calendário cortado perto do rodapé da tela).
+
+**Estilo:** `DatePicker.module.css`, autossuficiente, sem cor literal. O
+destaque do dia selecionado (`--accent-grad` + `var(--on-accent)`) usa sombra
+fixa `--shadow-accent` (bloco `invariante` de `tokens.json`) — não confundir
+com `--shadow-glow`, que varia por tema e serve a outro propósito. A fonte do
+`dp-input` é `inherit` (o primitivo não fixa família de fonte; os apps
+hospedeiros já usam Inter no `body`).
