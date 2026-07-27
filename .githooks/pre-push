@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Mantém o grafo Graphify do repo em dia a cada push.
+# Ver PLANO-ARQUITETURA.md, Seção 5.2 (Fase 1). Não bloqueia o push se o graphify falhar.
+if command -v graphify >/dev/null 2>&1; then
+  graphify update . || echo "aviso: graphify update falhou (não bloqueando o push)"
+fi
+exit 0
