@@ -28,9 +28,10 @@ itens, não centenas — não pagina nem tem busca embutida).
 **Quando não usar:** múltipla seleção, lista muito longa com busca, ou campo
 de data (isso é o `DatePicker`, ainda não unificado).
 
-**Estilo:** as classes `.ig-dd*` que o componente usa vivem no `globals.css`
-de cada app consumidor, não aqui — o primitivo não traz CSS embutido.
-Atenção: hoje há uma divergência conhecida entre os dois apps nessas classes
-(`ingenix-marketing` tem estado `:disabled` e `min-width:0` em `.ig-dd-val`
-que o `promo-robot-web` não tem) — não foi reconciliada na unificação deste
-componente, ver PLANO-ARQUITETURA.md passo 20.
+**Estilo:** CSS próprio, autossuficiente (`Dropdown.module.css`, ao lado do
+componente) — não depende de classe global de nenhum app consumidor, conforme
+ADR 0003 ("Regra geral — autossuficiência"). O estado `:disabled` e o
+`min-width: 0` em `.val` (necessário pro `text-overflow: ellipsis` funcionar
+dentro do flex) vieram da versão do `ingenix-marketing`, que tinha os dois e
+o `promo-robot-web` não; entraram na união, não são opcionais. Ver passo 20b
+do PLANO-ARQUITETURA.md.

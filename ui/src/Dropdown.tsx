@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Check } from "lucide-react";
+import styles from "./Dropdown.module.css";
 
 export interface DropdownOption {
   value: string;
@@ -79,25 +80,25 @@ export default function Dropdown({
   }, [open]);
 
   return (
-    <div className="ig-dd" style={style}>
+    <div className={styles.dd} style={style}>
       <button
         ref={trigRef}
         type="button"
-        className={`ig-dd-btn${open ? " open" : ""}`}
+        className={`${styles.btn}${open ? ` ${styles.open}` : ""}`}
         onClick={() => !disabled && setOpen((o) => !o)}
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
       >
-        {sel?.dot && <span className="ig-dd-dot" style={{ background: sel.dot }} />}
-        <span className="ig-dd-val">{sel?.label ?? placeholder ?? "Selecione…"}</span>
-        <ChevronDown size={16} className="ig-dd-chev" />
+        {sel?.dot && <span className={styles.dot} style={{ background: sel.dot }} />}
+        <span className={styles.val}>{sel?.label ?? placeholder ?? "Selecione…"}</span>
+        <ChevronDown size={16} className={styles.chev} />
       </button>
       {open && createPortal(
         <div
           ref={menuRef}
-          className="ig-dd-menu"
+          className={styles.menu}
           role="listbox"
           style={{ left: pos.left, width: pos.width, top: pos.top, bottom: pos.bottom, maxHeight: pos.maxH }}
         >
@@ -107,12 +108,12 @@ export default function Dropdown({
               type="button"
               role="option"
               aria-selected={o.value === value}
-              className={`ig-dd-opt${o.value === value ? " on" : ""}`}
+              className={`${styles.opt}${o.value === value ? ` ${styles.on}` : ""}`}
               onClick={() => { onChange(o.value); setOpen(false); }}
             >
-              {o.dot && <span className="ig-dd-dot" style={{ background: o.dot }} />}
-              <span className="ig-dd-val">{o.label}</span>
-              {o.value === value && <Check size={15} className="ig-dd-ok" />}
+              {o.dot && <span className={styles.dot} style={{ background: o.dot }} />}
+              <span className={styles.val}>{o.label}</span>
+              {o.value === value && <Check size={15} className={styles.ok} />}
             </button>
           ))}
         </div>,
