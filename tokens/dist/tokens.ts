@@ -9,6 +9,13 @@ export const tokensInvariantes = {
   "accent-grad": "linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)",
   "radius": "var(--radius-lg)",
   "shadow": "var(--shadow-md)",
+  "preview-light-bg": "#EEF1F6",
+  "preview-light-panel": "#FFFFFF",
+  "preview-light-panel-border": "#E2E8F0",
+  "preview-dark-bg": "#0B1120",
+  "preview-dark-panel": "#141B2D",
+  "preview-dark-panel-border": "#26324B",
+  "on-accent": "#FFFFFF",
 } as const;
 
 export const tokensClaro = {

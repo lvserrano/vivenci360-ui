@@ -52,3 +52,42 @@ ADR 0003 ("Regra geral — autossuficiência"). O estado `:disabled` e o
 dentro do flex) vieram da versão do `ingenix-marketing`, que tinha os dois e
 o `promo-robot-web` não; entraram na união, não são opcionais. Ver passo 20b
 do PLANO-ARQUITETURA.md.
+
+## ThemeToggle
+
+`import { ThemeToggle } from "@vivenci360/ui";`
+
+Alterna o tema claro/escuro do app. Fica em sincronia com qualquer outra
+instância montada na mesma origem via evento `ingenix-tema`.
+
+```tsx
+<ThemeToggle />
+<ThemeToggle variant="sidebar" />
+<ThemeToggle variant="segment" />
+<ThemeToggle variant="cards" />
+```
+
+Quatro variantes:
+
+- `"icon"` (default) — botão redondo neutro. É o default porque é o único que
+  não pressupõe o fundo em que está montado; funciona sobre qualquer app.
+- `"sidebar"` — botão redondo para uso **dentro da sidebar escura** (usa
+  `--sidebar-hover` / `--sidebar-text-active`); fora desse contexto, use
+  `"icon"`.
+- `"segment"` — controle Claro/Escuro rotulado, dois botões lado a lado.
+- `"cards"` — dois previews de tema (claro/escuro) selecionáveis, usados em
+  telas de Configurações/Aparência.
+
+`className?: string` concatena em todas as variantes.
+
+`tema.ts` viaja junto com o componente (`temaInicial`, `salvarTema`,
+`aplicarTema`, `THEME_KEY`, tipo `Tema`, todos exportados pelo barrel) porque é
+a lógica inteira do `ThemeToggle` — sem ela o primitivo importaria do app que
+o consome, dependência invertida. `THEME_KEY` (`"ingenix_theme"`) e o evento
+(`"ingenix-tema"`) são contrato de runtime entre os apps (ver `docs/NOMES.md`)
+e não são renomeáveis.
+
+**Estilo:** `ThemeToggle.module.css`, autossuficiente, sem cor literal — as
+cores fixas do preview de `variant="cards"` (que não reagem a `data-theme`,
+porque mostram os dois temas ao mesmo tempo) vêm do bloco `invariante` de
+`tokens.json` (`--preview-light-*`, `--preview-dark-*`, `--on-accent`).

@@ -1,0 +1,62 @@
+/* ── variant="icon" — botão neutro, funciona sobre qualquer fundo ── */
+.temaIcon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
+  background: var(--hover); color: var(--text-muted);
+  border: 1px solid var(--border); cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.temaIcon:hover { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+/* ── variant="sidebar" — para uso dentro da sidebar escura ── */
+.temaIconSidebar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--sidebar-hover); color: var(--sidebar-text-active);
+  border: 1px solid transparent; cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.temaIconSidebar:hover { background: var(--accent); color: var(--on-accent); }
+
+/* ── variant="segment" — controle Claro/Escuro rotulado ── */
+.temaSeg {
+  display: inline-flex; align-self: flex-start; border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.temaSeg button {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.55rem 1rem; background: var(--surface); border: none; cursor: pointer;
+  color: var(--text-muted); font-weight: 600; font-size: 0.85rem;
+  transition: background var(--transition), color var(--transition);
+}
+.temaSeg button + button { border-left: 1px solid var(--border-strong); }
+.temaSeg button.on { background: var(--accent); color: var(--on-accent); }
+.temaSeg button:not(.on):hover { background: var(--accent-pale); color: var(--accent); }
+
+/* ── variant="cards" — dois previews de tema selecionáveis ── */
+.temaCards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; width: 100%; max-width: 460px; }
+.temaCard {
+  padding: 0; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface);
+  cursor: pointer; overflow: hidden; text-align: left;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.temaCard:hover { border-color: var(--accent-border); }
+.temaCard.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-pale); }
+.temaPrev { height: 84px; padding: 10px; display: flex; gap: 6px; }
+.temaPrev[data-t="light"] { background: var(--preview-light-bg); }
+.temaPrev[data-t="dark"]  { background: var(--preview-dark-bg); }
+.temaPrevSide { width: 26px; border-radius: 5px; flex-shrink: 0; }
+.temaPrev[data-t="light"] .temaPrevSide { background: var(--preview-light-panel); border: 1px solid var(--preview-light-panel-border); }
+.temaPrev[data-t="dark"]  .temaPrevSide { background: var(--preview-dark-panel); border: 1px solid var(--preview-dark-panel-border); }
+.temaPrevMain { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.temaPrevBar { height: 15px; width: 62%; border-radius: 4px; background: var(--accent-grad); }
+.temaPrevLine { height: 8px; border-radius: 3px; }
+.temaPrevLine.short { width: 55%; }
+.temaPrev[data-t="light"] .temaPrevLine { background: var(--preview-light-panel); }
+.temaPrev[data-t="dark"]  .temaPrevLine { background: var(--preview-dark-panel); }
+.temaCardFoot {
+  display: flex; align-items: center; gap: 6px; padding: 0.6rem 0.75rem; font-size: 0.86rem;
+  font-weight: 600; color: var(--text); border-top: 1px solid var(--border);
+}
+.temaCard.on .temaCardFoot { color: var(--accent); }
+.temaCardCheck { margin-left: auto; color: var(--accent); }
