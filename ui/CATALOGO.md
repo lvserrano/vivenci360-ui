@@ -154,3 +154,46 @@ foi digitado, sem confirmação. Ver ADR 0003, emenda do passo 23, item 3.
 (`modalFadeIn`, `modalCardIn`) vivem dentro do módulo, não em `globals.css` de
 app nenhum. Cores via tokens do bloco `invariante` (`--overlay`,
 `--shadow-modal`, `--shadow-accent-lg`, `--on-accent`). Largura fixa em 440px.
+
+## O que NÃO é primitivo (e por quê)
+
+Anti-catálogo. Fonte única do que **deliberadamente** não vira componente
+compartilhado — existe para que o passo 2 do Protocolo (CLAUDE.md) e o `/estilo`
+gerado (passo 25) não tratem a ausência como lacuna a preencher. Se algo está
+aqui, a decisão de não subir para `packages/ui` já foi tomada; não recrie.
+
+- **`Button` / `Input`** — HTML nativo (`<button>`, `<input>`) mais os tokens já
+  resolve; não há primitivo e não se cria um. Estilizar é aplicar token, não
+  embrulhar em componente.
+- **`Table`, `Toast`** — zero uso em produção; não existem no produto. Não se
+  cria primitivo para caso hipotético (prop e componente nascem de call site
+  real, nunca de previsão).
+- **`chips`, `segmented`, `wizard`, `stepper`, `hub-cards`** — composição de
+  domínio (Camada 3 da Seção 3.1 do PLANO-ARQUITETURA.md): fica no app, não sobe
+  para `packages/ui` enquanto **dois** apps não usarem o mesmo. Vários deles são
+  o que o passo 25 vai remover do `/estilo`, porque demonstram o que o produto
+  não tem em vez de documentar o que ele tem.
+- **`.modal*` e `.cal*` soltos em CSS de app** — são duplicatas já unificadas em
+  `Modal` e `DatePicker` (passos 20/23). O que sobrou solto num `globals.css` é
+  resíduo a remover, não fonte a recriar.
+
+Regra geral: composição de domínio (ex.: `Sidebar` da plataforma, `Board` do
+Kanban) fica no app. Só vira primitivo quando **dois** apps usam de fato — regra
+anti-abstração-prematura, Seção 3.1 Camada 3 do PLANO-ARQUITETURA.md. Um app só
+usando não justifica a subida; justifica manter no `components/` do próprio app.
+
+## Tokens
+
+Os tokens **não** são reproduzidos em tabela aqui — tabela copiada à mão vira
+documentação que apodrece e diverge da fonte. Ponteiro único:
+
+- Fonte: `@vivenci360/tokens` — `packages/tokens/tokens.json` é a fonte, e
+  `dist/tokens.css` / `dist/tokens.ts` são **gerados** por `node tokens/build.mjs`
+  (nunca editados à mão).
+- A tabela legível dos tokens é **renderizada a partir deles** na rota `/estilo`
+  (passo 25), a partir do `dist` gerado — não daqui.
+- Nome de token é semântico, nunca cromático (`--accent`, `--surface`, `--text`;
+  jamais `--indigo`, `--verde`). Cor fixa por definição (previews de tema,
+  gradiente de accent) mora no bloco `invariante` do `tokens.json`, não vira
+  exceção à proibição de cor literal.
+- Nenhum `#hex`, `rgb(`, `rgba(` ou `hsl(` fora de `tokens.json`.
