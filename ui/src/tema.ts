@@ -16,12 +16,27 @@
 // os únicos dois temas que existem), então um tema de marca novo (passo 35)
 // não exige tocar neste arquivo, só em tokens.json.
 
+import type { LucideIcon } from "lucide-react";
+import { Moon, MoonStar, Sun } from "lucide-react";
 import { temas } from "../../tokens/dist/tokens";
 
 export const THEME_KEY = "ingenix_theme";
 export type Tema = keyof typeof temas;
 
 const NOMES_TEMA = Object.keys(temas) as Tema[];
+
+/**
+ * Metadados de apresentação por tema (rótulo PT-BR + ícone lucide), usados
+ * pelo ThemeToggle nas variantes "segment"/"cards"/"icon". Fica aqui, junto
+ * do resto da lógica de tema, para o primitivo continuar autossuficiente —
+ * um tema de marca novo (chave nova em tokens.json > temas) só funciona nas
+ * variantes visuais depois de ganhar uma entrada aqui.
+ */
+export const TEMAS_META: Record<Tema, { rotulo: string; icone: LucideIcon }> = {
+  light: { rotulo: "Claro", icone: Sun },
+  dark: { rotulo: "Escuro", icone: Moon },
+  oled: { rotulo: "OLED", icone: MoonStar },
+};
 
 function ehTemaConhecido(v: unknown): v is Tema {
   return typeof v === "string" && (NOMES_TEMA as string[]).includes(v);

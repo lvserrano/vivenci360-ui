@@ -33,8 +33,8 @@
 .temaSeg button.on { background: var(--accent); color: var(--on-accent); }
 .temaSeg button:not(.on):hover { background: var(--accent-pale); color: var(--accent); }
 
-/* ── variant="cards" — dois previews de tema selecionáveis ── */
-.temaCards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; width: 100%; max-width: 460px; }
+/* ── variant="cards" — um preview por tema, selecionável ── */
+.temaCards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; width: 100%; max-width: 620px; }
 .temaCard {
   padding: 0; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface);
   cursor: pointer; overflow: hidden; text-align: left;
@@ -45,15 +45,18 @@
 .temaPrev { height: 84px; padding: 10px; display: flex; gap: 6px; }
 .temaPrev[data-t="light"] { background: var(--preview-light-bg); }
 .temaPrev[data-t="dark"]  { background: var(--preview-dark-bg); }
+.temaPrev[data-t="oled"]  { background: var(--preview-oled-bg); }
 .temaPrevSide { width: 26px; border-radius: 5px; flex-shrink: 0; }
 .temaPrev[data-t="light"] .temaPrevSide { background: var(--preview-light-panel); border: 1px solid var(--preview-light-panel-border); }
 .temaPrev[data-t="dark"]  .temaPrevSide { background: var(--preview-dark-panel); border: 1px solid var(--preview-dark-panel-border); }
+.temaPrev[data-t="oled"]  .temaPrevSide { background: var(--preview-oled-panel); border: 1px solid var(--preview-oled-panel-border); }
 .temaPrevMain { flex: 1; display: flex; flex-direction: column; gap: 5px; }
 .temaPrevBar { height: 15px; width: 62%; border-radius: 4px; background: var(--accent-grad); }
 .temaPrevLine { height: 8px; border-radius: 3px; }
 .temaPrevLine.short { width: 55%; }
 .temaPrev[data-t="light"] .temaPrevLine { background: var(--preview-light-panel); }
 .temaPrev[data-t="dark"]  .temaPrevLine { background: var(--preview-dark-panel); }
+.temaPrev[data-t="oled"]  .temaPrevLine { background: var(--preview-oled-panel); }
 .temaCardFoot {
   display: flex; align-items: center; gap: 6px; padding: 0.6rem 0.75rem; font-size: 0.86rem;
   font-weight: 600; color: var(--text); border-top: 1px solid var(--border);

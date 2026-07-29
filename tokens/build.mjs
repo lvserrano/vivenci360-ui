@@ -23,7 +23,73 @@ const nomesTemas = Object.keys(tokens.temas);
 const temaPadrao = tokens._tema_padrao;
 
 function colorScheme(nome) {
-  return nome === "dark" ? "dark" : "light";
+  // "oled" também é esquema escuro para o navegador (scrollbar nativa, form
+  // controls etc.) — só "light" pinta claro. Passo 35.
+  return nome === "light" ? "light" : "dark";
+}
+
+// ─── Checagem de contraste WCAG AA (roda no build, falha o processo) ───
+// Razão de contraste por luminância relativa (WCAG 2.x):
+//   sRGB [0,255] → linear → L = .2126 R + .7152 G + .0722 B
+//   ratio = (L1 + .05) / (L2 + .05), L1 = mais clara
+// Só checa pares de cor sólida em hex — pula rgba()/gradiente, que não têm
+// luminância fixa fora do contexto de composição.
+function hexParaRgb(hex) {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function luminanciaRelativa([r, g, b]) {
+  const canal = (c) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  const [rl, gl, bl] = [canal(r), canal(g), canal(b)];
+  return 0.2126 * rl + 0.7152 * gl + 0.0722 * bl;
+}
+
+function razaoContraste(hexA, hexB) {
+  const rgbA = hexParaRgb(hexA);
+  const rgbB = hexParaRgb(hexB);
+  if (!rgbA || !rgbB) return null; // pula rgba/gradiente
+  const lA = luminanciaRelativa(rgbA);
+  const lB = luminanciaRelativa(rgbB);
+  const [clara, escura] = lA >= lB ? [lA, lB] : [lB, lA];
+  return (clara + 0.05) / (escura + 0.05);
+}
+
+const PARES_AA = [
+  ["text", "bg", 4.5],
+  ["text", "surface", 4.5],
+  ["text-muted", "bg", 4.5],
+  ["text-muted", "surface", 4.5],
+  ["on-accent", "accent", 4.5],
+  ["sidebar-text-active", "sidebar-bg", 4.5],
+  ["text-subtle", "bg", 3.0], // decorativo/placeholder — limiar reduzido, não é texto de leitura
+];
+
+let falhouContraste = false;
+for (const nome of nomesTemas) {
+  const tema = tokens.temas[nome];
+  for (const [chaveA, chaveB, minimo] of PARES_AA) {
+    const valorA = chaveA === "on-accent" ? tokens.invariante[chaveA] : tema[chaveA];
+    const valorB = chaveB === "on-accent" ? tokens.invariante[chaveB] : tema[chaveB];
+    if (valorA === undefined || valorB === undefined) continue;
+    const razao = razaoContraste(valorA, valorB);
+    if (razao === null) continue; // par não é hex/hex (rgba/gradiente) — pulado
+    if (razao < minimo) {
+      falhouContraste = true;
+      console.error(
+        `[tokens] contraste insuficiente em tema "${nome}": --${chaveA} (${valorA}) / --${chaveB} (${valorB}) = ${razao.toFixed(2)}:1, mínimo ${minimo}:1`
+      );
+    }
+  }
+}
+if (falhouContraste) {
+  console.error("[tokens] build abortado: ajuste os valores em tokens.json (não o limiar).");
+  process.exit(1);
 }
 
 const blocosPorTema = nomesTemas

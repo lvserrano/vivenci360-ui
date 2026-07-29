@@ -1,18 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Moon, Sun, Check } from "lucide-react";
-import { temaInicial, salvarTema, type Tema } from "./tema";
+import { Check } from "lucide-react";
+import { temaInicial, salvarTema, TEMAS_META, type Tema } from "./tema";
 import s from "./ThemeToggle.module.css";
 
+// Lista de temas conhecidos, na ordem de exibição — derivada de TEMAS_META,
+// nunca escrita à mão aqui. Um tema de marca novo (tokens.json > temas +
+// entrada em TEMAS_META) aparece nas três variantes sem tocar neste arquivo.
+const NOMES_TEMA = Object.keys(TEMAS_META) as Tema[];
+
 /**
- * Alterna o tema claro/escuro do app. Fica em sincronia com qualquer outra
- * instância montada (mesma origem) via evento `ingenix-tema`.
+ * Alterna o tema do app entre os N temas definidos em tokens.json (hoje:
+ * claro, escuro, OLED). Fica em sincronia com qualquer outra instância
+ * montada (mesma origem) via evento `ingenix-tema`.
  *
- *  - variant="icon"    → botão redondo neutro, funciona sobre qualquer fundo (default)
+ *  - variant="icon"    → botão redondo neutro, cicla entre os temas (default)
  *  - variant="sidebar" → botão redondo para uso dentro da sidebar escura
- *  - variant="segment" → controle Claro/Escuro rotulado
- *  - variant="cards"   → dois previews de tema selecionáveis
+ *  - variant="segment" → controle rotulado, um botão por tema
+ *  - variant="cards"   → um preview por tema, selecionável
  */
 export default function ThemeToggle({
   variant = "icon",
@@ -54,28 +60,31 @@ export default function ThemeToggle({
   if (variant === "cards") {
     return (
       <div className={cx(s.temaCards, className)} role="group" aria-label="Tema da interface">
-        {(["light", "dark"] as Tema[]).map((t) => (
-          <button
-            key={t}
-            type="button"
-            className={cx(s.temaCard, tema === t && s.on)}
-            onClick={() => escolher(t)}
-            aria-pressed={tema === t}
-          >
-            <div className={s.temaPrev} data-t={t}>
-              <div className={s.temaPrevSide} />
-              <div className={s.temaPrevMain}>
-                <div className={s.temaPrevBar} />
-                <div className={s.temaPrevLine} />
-                <div className={cx(s.temaPrevLine, s.short)} />
+        {NOMES_TEMA.map((t) => {
+          const { rotulo, icone: Icone } = TEMAS_META[t];
+          return (
+            <button
+              key={t}
+              type="button"
+              className={cx(s.temaCard, tema === t && s.on)}
+              onClick={() => escolher(t)}
+              aria-pressed={tema === t}
+            >
+              <div className={s.temaPrev} data-t={t}>
+                <div className={s.temaPrevSide} />
+                <div className={s.temaPrevMain}>
+                  <div className={s.temaPrevBar} />
+                  <div className={s.temaPrevLine} />
+                  <div className={cx(s.temaPrevLine, s.short)} />
+                </div>
               </div>
-            </div>
-            <div className={s.temaCardFoot}>
-              {t === "light" ? <Sun size={15} /> : <Moon size={15} />} {t === "light" ? "Claro" : "Escuro"}
-              {tema === t && <Check size={15} className={s.temaCardCheck} />}
-            </div>
-          </button>
-        ))}
+              <div className={s.temaCardFoot}>
+                <Icone size={15} /> {rotulo}
+                {tema === t && <Check size={15} className={s.temaCardCheck} />}
+              </div>
+            </button>
+          );
+        })}
       </div>
     );
   }
@@ -83,25 +92,32 @@ export default function ThemeToggle({
   if (variant === "segment") {
     return (
       <div className={cx(s.temaSeg, className)} role="group" aria-label="Tema da interface">
-        <button className={tema === "light" ? s.on : undefined} onClick={() => escolher("light")}>
-          <Sun size={15} /> Claro
-        </button>
-        <button className={tema === "dark" ? s.on : undefined} onClick={() => escolher("dark")}>
-          <Moon size={15} /> Escuro
-        </button>
+        {NOMES_TEMA.map((t) => {
+          const { rotulo, icone: Icone } = TEMAS_META[t];
+          return (
+            <button key={t} className={tema === t ? s.on : undefined} onClick={() => escolher(t)}>
+              <Icone size={15} /> {rotulo}
+            </button>
+          );
+        })}
       </div>
     );
   }
 
   const iconClass = variant === "sidebar" ? s.temaIconSidebar : s.temaIcon;
+  const indiceAtual = NOMES_TEMA.indexOf(tema);
+  const proximo = NOMES_TEMA[(indiceAtual + 1) % NOMES_TEMA.length];
+  // Mostra o ícone do PRÓXIMO tema (affordance do que o clique faz), como o
+  // botão de dois temas sempre fez — não o ícone do tema atual.
+  const { icone: IconeProximo, rotulo: rotuloProximo } = TEMAS_META[proximo];
   return (
     <button
       className={cx(iconClass, className)}
-      onClick={() => escolher(tema === "dark" ? "light" : "dark")}
-      title={tema === "dark" ? "Mudar para tema claro" : "Mudar para tema escuro"}
-      aria-label={tema === "dark" ? "Mudar para tema claro" : "Mudar para tema escuro"}
+      onClick={() => escolher(proximo)}
+      title={`Mudar para tema ${rotuloProximo.toLowerCase()}`}
+      aria-label={`Mudar para tema ${rotuloProximo.toLowerCase()}`}
     >
-      {tema === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+      <IconeProximo size={16} />
     </button>
   );
 }

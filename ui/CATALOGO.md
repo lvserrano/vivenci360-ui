@@ -55,10 +55,12 @@ do PLANO-ARQUITETURA.md.
 
 ## ThemeToggle
 
-`import { ThemeToggle } from "@vivenci360/ui";`
+`import { ThemeToggle, TEMAS_META } from "@vivenci360/ui";`
 
-Alterna o tema claro/escuro do app. Fica em sincronia com qualquer outra
-instância montada na mesma origem via evento `ingenix-tema`.
+Alterna entre os **N temas** definidos em `tokens.json` (passo 35: `light`,
+`dark`, `oled` — deixou de ser um par claro/escuro fixo). Fica em sincronia
+com qualquer outra instância montada na mesma origem via evento
+`ingenix-tema`.
 
 ```tsx
 <ThemeToggle />
@@ -69,28 +71,43 @@ instância montada na mesma origem via evento `ingenix-tema`.
 
 Quatro variantes:
 
-- `"icon"` (default) — botão redondo neutro. É o default porque é o único que
+- `"icon"` (default) — botão redondo neutro que **cicla** pela lista de temas
+  (próximo item, com wrap), mostrando o ícone do tema para o qual vai mudar
+  (affordance do clique, não o tema atual). É o default porque é o único que
   não pressupõe o fundo em que está montado; funciona sobre qualquer app.
-- `"sidebar"` — botão redondo para uso **dentro da sidebar escura** (usa
-  `--sidebar-hover` / `--sidebar-text-active`); fora desse contexto, use
-  `"icon"`.
-- `"segment"` — controle Claro/Escuro rotulado, dois botões lado a lado.
-- `"cards"` — dois previews de tema (claro/escuro) selecionáveis, usados em
-  telas de Configurações/Aparência.
+- `"sidebar"` — mesmo ciclo, botão redondo para uso **dentro da sidebar
+  escura** (usa `--sidebar-hover` / `--sidebar-text-active`); fora desse
+  contexto, use `"icon"`.
+- `"segment"` — um botão rotulado por tema, lado a lado (hoje três: Claro,
+  Escuro, OLED).
+- `"cards"` — um preview por tema, selecionável (hoje três lado a lado), usado
+  em telas de Configurações/Aparência.
 
 `className?: string` concatena em todas as variantes.
 
+A lista de temas e a ordem de exibição **nunca são escritas à mão** no
+componente — vêm de `Object.keys(TEMAS_META)`, que por sua vez deriva de
+`tokens.json > temas` via `keyof typeof temas`. Um tema de marca novo entra
+adicionando a chave em `tokens.json` e uma entrada em `TEMAS_META` (rótulo
+PT-BR + ícone lucide); nenhuma das quatro variantes do `ThemeToggle.tsx`
+precisa ser tocada.
+
 `tema.ts` viaja junto com o componente (`temaInicial`, `salvarTema`,
-`aplicarTema`, `THEME_KEY`, tipo `Tema`, todos exportados pelo barrel) porque é
-a lógica inteira do `ThemeToggle` — sem ela o primitivo importaria do app que
-o consome, dependência invertida. `THEME_KEY` (`"ingenix_theme"`) e o evento
-(`"ingenix-tema"`) são contrato de runtime entre os apps (ver `docs/NOMES.md`)
-e não são renomeáveis.
+`aplicarTema`, `THEME_KEY`, `TEMAS_META`, tipo `Tema`, todos exportados pelo
+barrel) porque é a lógica inteira do `ThemeToggle` — sem ela o primitivo
+importaria do app que o consome, dependência invertida. `THEME_KEY`
+(`"ingenix_theme"`) e o evento (`"ingenix-tema"`) são contrato de runtime
+entre os apps (ver `docs/NOMES.md`) e não são renomeáveis. `TEMAS_META` é
+`Record<Tema, { rotulo: string; icone: LucideIcon }>` — hoje `light` = Sun
+"Claro", `dark` = Moon "Escuro", `oled` = MoonStar "OLED".
 
 **Estilo:** `ThemeToggle.module.css`, autossuficiente, sem cor literal — as
 cores fixas do preview de `variant="cards"` (que não reagem a `data-theme`,
-porque mostram os dois temas ao mesmo tempo) vêm do bloco `invariante` de
-`tokens.json` (`--preview-light-*`, `--preview-dark-*`, `--on-accent`).
+porque cada card mostra um tema fixo independente do tema em que o app está)
+vêm do bloco `invariante` de `tokens.json` (`--preview-light-*`,
+`--preview-dark-*`, `--preview-oled-*`, `--on-accent`). O grid de `"cards"`
+é `repeat(3, 1fr)` — adicionar um quarto tema exige checar o `max-width` do
+`.temaCards`, que não é derivado automaticamente da contagem de temas.
 
 ## DatePicker
 
@@ -199,12 +216,32 @@ documentação que apodrece e diverge da fonte. Ponteiro único:
 - Nenhum `#hex`, `rgb(`, `rgba(` ou `hsl(` fora de `tokens.json`.
 
 **Schema é N-temas nomeados (passo 34).** `tokens.json` tem `invariante` (como
-sempre) e `temas`, um objeto chaveado por nome de tema — hoje só
-`temas.light` e `temas.dark`, que são os dois únicos temas que existem. Uma
-chave `_tema_padrao` (`"light"`) diz qual tema é aplicado em `:root` sem
-`data-theme`. Isso é pré-requisito estrutural do passo 35 (temas de marca +
-OLED) — nenhum tema novo foi adicionado neste passo, e os valores de `light` e
-`dark` continuam byte-a-byte iguais aos de antes da reestruturação.
+sempre) e `temas`, um objeto chaveado por nome de tema. Uma chave
+`_tema_padrao` (`"light"`) diz qual tema é aplicado em `:root` sem
+`data-theme`.
+
+**Passo 35 — paleta de marca.** A paleta índigo/roxo placeholder (`#6366F1`)
+saiu de `temas.light`/`temas.dark` e entrou a paleta oficial Vivenci
+(vermelho `#B61615`, Pantone 187 — monocromática, ver
+`docs/marca/fontes-da-marca.md`), com `temas.oled` **novo**. Não é mais "só
+light e dark": são três temas, todos na paleta de marca. `build.mjs` passou a
+rodar uma checagem de contraste WCAG AA no build (falha com `process.exit(1)`
+listando o par culpado) — por causa dela, dois valores do preview aprovado em
+`docs/marca/sistema-visual.html` foram levemente ajustados (não afrouxados):
+`temas.dark`/`temas.oled` `--accent` é `#C94741` em vez do `#E86A67` do
+preview (branco sobre `#E86A67` dava 3.14:1, abaixo do mínimo 4.5:1 exigido
+para `--on-accent`/`--accent`), e `temas.light.text-subtle` é `#898993` em vez
+de `#8E8E98` (2.98:1 contra `--bg`, abaixo do mínimo 3.0:1 do próprio token,
+que é decorativo). Ver o comentário `_comentario_passo35` em `tokens.json`
+para os números completos.
+
+Tokens novos, todos por tema: `mv` / `mv-bg` / `mv-border` — o azul-fosco
+"movido", único tom fora da paleta vermelho/preto/branco da marca, reservado a
+**estado categórico de dado** (não é accent, não decora UI). Bloco
+`invariante` ganhou `--preview-oled-bg` / `--preview-oled-panel` /
+`--preview-oled-panel-border`, mesmo papel dos `--preview-light-*` /
+`--preview-dark-*` já existentes — cor fixa por definição, não reage a
+`data-theme`, consumida pelo `ThemeToggle` em `variant="cards"`.
 
 Consequência em `dist/`:
 
