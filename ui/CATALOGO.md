@@ -197,3 +197,38 @@ documentação que apodrece e diverge da fonte. Ponteiro único:
   gradiente de accent) mora no bloco `invariante` do `tokens.json`, não vira
   exceção à proibição de cor literal.
 - Nenhum `#hex`, `rgb(`, `rgba(` ou `hsl(` fora de `tokens.json`.
+
+**Schema é N-temas nomeados (passo 34).** `tokens.json` tem `invariante` (como
+sempre) e `temas`, um objeto chaveado por nome de tema — hoje só
+`temas.light` e `temas.dark`, que são os dois únicos temas que existem. Uma
+chave `_tema_padrao` (`"light"`) diz qual tema é aplicado em `:root` sem
+`data-theme`. Isso é pré-requisito estrutural do passo 35 (temas de marca +
+OLED) — nenhum tema novo foi adicionado neste passo, e os valores de `light` e
+`dark` continuam byte-a-byte iguais aos de antes da reestruturação.
+
+Consequência em `dist/`:
+
+- `dist/tokens.css` ganha um bloco `:root[data-theme="<nome>"]` **para cada**
+  tema em `temas` (inclusive `"light"`, que antes só existia implícito no
+  `:root` default — agora também tem bloco explícito, redundante de propósito:
+  permite `data-theme="light"` funcionar mesmo quando `_tema_padrao` mudar no
+  futuro). O `@media (prefers-color-scheme: dark)` do fallback anti-flash
+  continua fixo em `temas.dark` — é um caso especial documentado, não participa
+  da iteração genérica, porque o SO só sabe pedir `light`/`dark`, nunca um tema
+  de marca.
+- `dist/tokens.ts` exporta `temas` (record por nome) e `type Tema = keyof
+  typeof temas`. `tokensClaro`/`tokensEscuro`/`tokensDoTema` continuam
+  exportados e funcionando (agora como aliases de `temas.light` / `temas.dark`),
+  para não quebrar `/estilo` e `login/page.tsx`.
+- `ui/src/tema.ts` deriva `type Tema` de `dist/tokens.ts` (`keyof typeof
+  temas`) em vez de `"light" | "dark"` hardcoded; `temaInicial` valida contra o
+  conjunto de nomes conhecidos (`Object.keys(temas)`), não mais por comparação
+  literal dupla. `THEME_KEY` (`"ingenix_theme"`) e o evento `"ingenix-tema"`
+  **não mudam** — são identificadores de runtime legados intocáveis.
+
+**Para adicionar um tema novo no futuro:** uma chave nova em `tokens.json` >
+`temas` (com todas as chaves que `light`/`dark` têm hoje) + `node
+tokens/build.mjs`. Nenhum outro arquivo precisa mudar para o tema aparecer em
+`dist/tokens.css` e em `dist/tokens.ts`; só precisa mudar código de app se
+aquele app quiser **oferecer** o tema novo como opção de UI (isso é passo 35,
+fora do escopo daqui).

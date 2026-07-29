@@ -1,6 +1,6 @@
-// Tema claro/escuro (INGENIX). A preferência fica em localStorage
-// (`ingenix_theme`) e é aplicada como atributo `data-theme` no <html> — os
-// tokens de cor do globals.css reagem.
+// Tema (INGENIX). A preferência fica em localStorage (`ingenix_theme`) e é
+// aplicada como atributo `data-theme` no <html> — os tokens de cor do
+// globals.css reagem.
 //
 // Obs.: localStorage é por-origem, então a escolha feita num app (ex.: o hub
 // em muapp.com.br) NÃO atravessa para outro subdomínio (ex.:
@@ -10,19 +10,34 @@
 // O "sem flash" no primeiro paint é feito por um <script> inline no layout de
 // cada app; aqui ficam os helpers usados pelos controles (ThemeToggle,
 // Configurações).
+//
+// Passo 34: generalizado de dois temas chumbados para N temas nomeados. `Tema`
+// deriva do schema gerado em tokens.ts (hoje efetivamente "light" | "dark" —
+// os únicos dois temas que existem), então um tema de marca novo (passo 35)
+// não exige tocar neste arquivo, só em tokens.json.
+
+import { temas } from "../../tokens/dist/tokens";
 
 export const THEME_KEY = "ingenix_theme";
-export type Tema = "light" | "dark";
+export type Tema = keyof typeof temas;
+
+const NOMES_TEMA = Object.keys(temas) as Tema[];
+
+function ehTemaConhecido(v: unknown): v is Tema {
+  return typeof v === "string" && (NOMES_TEMA as string[]).includes(v);
+}
 
 /** Lê a preferência salva; sem preferência, segue o tema do sistema operacional. */
 export function temaInicial(): Tema {
   if (typeof window === "undefined") return "light";
   try {
     const salvo = localStorage.getItem(THEME_KEY);
-    if (salvo === "light" || salvo === "dark") return salvo;
+    if (ehTemaConhecido(salvo)) return salvo;
   } catch {
     /* localStorage indisponível */
   }
+  // O SO só sabe pedir light/dark via prefers-color-scheme — caso especial,
+  // não itera sobre NOMES_TEMA (um tema de marca não tem correspondente no SO).
   if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) return "dark";
   return "light";
 }
