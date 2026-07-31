@@ -140,9 +140,9 @@ export const tokensInvariantes = {
 ${objetoTs(tokens.invariante)}
 } as const;
 
-// N temas nomeados (passo 34). Hoje só existem "light" e "dark" — adicionar um
-// tema novo é acrescentar uma chave em tokens.json > temas e rodar o build,
-// nada aqui precisa mudar à mão.
+// N temas nomeados (passo 34). Hoje existem "light", "dark" e "oled" —
+// adicionar um tema novo é acrescentar uma chave em tokens.json > temas e
+// rodar o build, nada aqui precisa mudar à mão.
 export const temas = {
 ${temasTs}
 } as const;

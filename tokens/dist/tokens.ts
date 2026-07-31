@@ -25,9 +25,9 @@ export const tokensInvariantes = {
   "shadow-accent-lg": "0 10px 28px rgba(182,22,21,.36)",
 } as const;
 
-// N temas nomeados (passo 34). Hoje só existem "light" e "dark" — adicionar um
-// tema novo é acrescentar uma chave em tokens.json > temas e rodar o build,
-// nada aqui precisa mudar à mão.
+// N temas nomeados (passo 34). Hoje existem "light", "dark" e "oled" —
+// adicionar um tema novo é acrescentar uma chave em tokens.json > temas e
+// rodar o build, nada aqui precisa mudar à mão.
 export const temas = {
   "light": {
     "accent": "#B61615",
@@ -70,14 +70,14 @@ export const temas = {
     "accent-dark": "#B61615",
     "accent-pale": "rgba(201,71,65,.15)",
     "accent-border": "rgba(201,71,65,.36)",
-    "sidebar-bg": "#0A0A0C",
-    "sidebar-hover": "#1A1A1F",
+    "sidebar-bg": "#141418",
+    "sidebar-hover": "#24242A",
     "sidebar-active": "#B61615",
     "sidebar-text": "#8E8E96",
     "sidebar-text-active": "#FFFFFF",
-    "bg": "#0D0D10",
-    "surface": "#161619",
-    "border": "#262629",
+    "bg": "#151519",
+    "surface": "#1E1E24",
+    "border": "#2C2C33",
     "border-strong": "#37373C",
     "hover": "rgba(255,255,255,.06)",
     "text": "#E7E7EA",

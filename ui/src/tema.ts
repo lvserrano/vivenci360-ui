@@ -12,9 +12,9 @@
 // Configurações).
 //
 // Passo 34: generalizado de dois temas chumbados para N temas nomeados. `Tema`
-// deriva do schema gerado em tokens.ts (hoje efetivamente "light" | "dark" —
-// os únicos dois temas que existem), então um tema de marca novo (passo 35)
-// não exige tocar neste arquivo, só em tokens.json.
+// deriva do schema gerado em tokens.ts (hoje "light" | "dark" | "oled" —
+// os três temas que existem), então um tema de marca novo não exige tocar
+// neste arquivo, só em tokens.json.
 
 import type { LucideIcon } from "lucide-react";
 import { Moon, MoonStar, Sun } from "lucide-react";
